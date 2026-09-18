@@ -8,23 +8,21 @@
 <body>
   <canvas id="confetti"></canvas>
 
-  
-  <!-- ДИСКЛЕЙМЕР -->
+  <!-- ДИСКЛЕЙМЕР (текст подставляется из script.js) -->
   <div id="disclaimer" class="disclaimer">
     <div class="disclaimer-icon">🚧</div>
     <div class="disclaimer-text">
-      <strong>Сайт в разработке!</strong>
-      Мы постоянно добавляем новые функции, улучшаем внешний вид и исправляем ошибки.
-      Следи за обновлениями — скоро будет ещё круче 🔥
+      <strong id="disclaimerTitle"></strong>
+      <span id="disclaimerBody"></span>
     </div>
     <button id="disclaimerClose" class="disclaimer-close" type="button" title="Закрыть">✕</button>
   </div>
 
-  <!-- ЧАТ ПОБЕДИТЕЛЯ — сбоку, не двигает контент -->
+  <!-- ЧАТ ПОБЕДИТЕЛЯ -->
   <aside class="chat-panel" id="chatPanel">
     <div class="chat-header">
       <span id="chatTitle">💬 Чат победителя</span>
-      <button id="clearChat" type="button" class="ghost-btn chat-close-btn">✕</button>
+      <button id="clearChat" type="button" class="chat-close-btn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages">
       <div class="chat-empty">Здесь появятся сообщения победителя</div>
@@ -57,26 +55,28 @@
           <input id="keyword" placeholder="!розыгрыш" />
         </div>
         <p>Всего участников: <span id="count">0</span></p>
-        <label>Игнор-лист (ники через запятую):
+        <label class="field">Игнор-лист (ники через запятую):
           <input id="ignoreList" placeholder="dentik__, nightbot, streamlabs">
         </label>
-        <label>
-                <label class="switch">
-        <input type="checkbox" id="cmdMode" checked>
-        <span class="slider"></span>
-        <span class="switch-label">Команды <code>!join</code> / <code>!leave</code> в чате</span>
-      </label>
+
+        <label class="switch">
+          <input type="checkbox" id="cmdMode" checked>
+          <span class="slider"></span>
+          <span class="switch-label">Команды <code>!join</code> / <code>!leave</code> в чате</span>
+        </label>
+
         <div class="row" style="margin-top:10px;">
-          <button id="clearStorage" type="button">🗑️ Сбросить сохранённое</button>
+          <button id="clearStorage" type="button" class="ghost-btn">🗑️ Сбросить сохранённое</button>
         </div>
       </section>
 
       <section class="card">
         <h2>Настройки</h2>
-        <label>Победителей: <input type="number" id="winnersCount" value="1" min="1"></label>
-        <label>Время на ответ (сек): <input type="number" id="timerSec" value="60" min="5"></label>
-        <label>Не выигрывать N раундов подряд: <input type="number" id="antiRepeat" value="1" min="0"></label>
-                <label class="switch">
+        <label class="field">Победителей: <input type="number" id="winnersCount" value="1" min="1"></label>
+        <label class="field">Время на ответ (сек): <input type="number" id="timerSec" value="60" min="5"></label>
+        <label class="field">Не выигрывать N раундов подряд: <input type="number" id="antiRepeat" value="1" min="0"></label>
+
+        <label class="switch">
           <input type="checkbox" id="soundOn" checked>
           <span class="slider"></span>
           <span class="switch-label">🔊 Звук</span>

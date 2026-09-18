@@ -40,7 +40,18 @@ let raceTimeout = null;
 const recentWinners = [];
 
 const STORAGE_KEY = 'dentik_randomizer_v1';
-const DISCLAIMER_KEY = 'dentik_disclaimer_seen';
+
+// ============================================================
+//  ДИСКЛЕЙМЕР — меняй только этот блок
+// ============================================================
+// 1) Текст дисклеймера (заголовок + описание)
+const DISCLAIMER_TITLE = 'Сайт в разработке!';
+const DISCLAIMER_BODY  = 'Мы постоянно добавляем новые функции, улучшаем внешний вид и исправляем ошибки. Следи за обновлениями — скоро будет ещё круче 🔥';
+
+// 2) Версия — меняй при каждом обновлении текста (v1 → v2 → v3 → ...)
+//    Каждая новая версия покажет дисклеймер всем зрителям заново.
+const DISCLAIMER_VERSION = 'v1';
+// ============================================================
 
 // ============================================================
 //  ЧАТ ПОБЕДИТЕЛЯ — открыть / закрыть
@@ -642,17 +653,24 @@ drawWheel(getParticipants(), currentAngle);
 hideChat();
 
 // ============================================================
-//  ДИСКЛЕЙМЕР
+//  ДИСКЛЕЙМЕР — логика
 // ============================================================
 const disclaimerEl = document.getElementById('disclaimer');
 const disclaimerCloseBtn = document.getElementById('disclaimerClose');
 
 if (disclaimerEl && disclaimerCloseBtn) {
-  // Показываем всегда при заходе
-  setTimeout(() => disclaimerEl.classList.add('show'), 800);
+  // Подставляем текст из переменных выше
+  const titleEl = document.getElementById('disclaimerTitle');
+  const bodyEl  = document.getElementById('disclaimerBody');
+  if (titleEl) titleEl.textContent = DISCLAIMER_TITLE;
+  if (bodyEl)  bodyEl.textContent  = DISCLAIMER_BODY;
 
+  const seen = localStorage.getItem('dentik_disclaimer_seen_' + DISCLAIMER_VERSION);
+  if (!seen) {
+    setTimeout(() => disclaimerEl.classList.add('show'), 800);
+  }
   disclaimerCloseBtn.addEventListener('click', () => {
     disclaimerEl.classList.remove('show');
-    // Ничего не сохраняем — значит будет показываться каждый раз
+    localStorage.setItem('dentik_disclaimer_seen_' + DISCLAIMER_VERSION, '1');
   });
 }
