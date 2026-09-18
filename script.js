@@ -1,5 +1,5 @@
 // ============================================================
-//  РАНДОМАЙЗЕР DENTIK__ — script.js (двухколоночный layout)
+//  РАНДОМАЙЗЕР DENTIK__ — script.js
 // ============================================================
 /* global tmi */
 
@@ -18,6 +18,7 @@ const keywordEl      = $('keyword');
 // --- Чат победителя ---
 const chatMessagesEl = $('chatMessages');
 const chatTitleEl    = $('chatTitle');
+const layoutEl       = document.querySelector('.layout');
 let chatWinner       = null;
 
 let history = [];
@@ -38,20 +39,40 @@ const recentWinners = [];
 const STORAGE_KEY = 'dentik_randomizer_v1';
 
 // ============================================================
-//  Чат победителя
+//  Кнопка открытия чата (создаём динамически)
 // ============================================================
+const openChatBtn = document.createElement('button');
+openChatBtn.id = 'openChatBtn';
+openChatBtn.textContent = '💬';
+openChatBtn.title = 'Открыть чат победителя';
+document.body.appendChild(openChatBtn);
+
+function showChat() {
+  layoutEl.classList.add('chat-visible');
+  openChatBtn.classList.remove('visible');
+}
+function hideChat() {
+  layoutEl.classList.remove('chat-visible');
+  openChatBtn.classList.add('visible');
+}
+
+openChatBtn.addEventListener('click', showChat);
+
 $('clearChat').addEventListener('click', () => {
+  hideChat();
   chatWinner = null;
   chatTitleEl.textContent = '💬 Чат победителя';
   chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
 });
 
+// ============================================================
+//  Чат победителя — функции
+// ============================================================
 function setChatWinner(winner) {
   chatWinner = winner;
   chatTitleEl.textContent = '💬 ' + winner;
   chatMessagesEl.innerHTML = '<div class="chat-empty">Ждём сообщений от ' + winner + '…</div>';
-  // Прокручиваем страницу к чату, чтобы было видно
-  chatMessagesEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  showChat();
 }
 
 function appendChatMessage(sender, message) {
@@ -623,3 +644,6 @@ loadState();
 updateCount();
 updateChatStatus(false);
 drawWheel(getParticipants(), currentAngle);
+
+// Изначально чат скрыт
+hideChat();

@@ -15,6 +15,7 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   --win: #4fd18b;
   --timer: #ffb454;
+  --chat-width: 320px;
 }
 
 body.theme-neon {
@@ -76,34 +77,48 @@ body::after {
 }
 
 /* ============================================================
-   LAYOUT — две колонки: чат + контент
+   LAYOUT — контент центрируется, чат не сдвигает его
    ============================================================ */
 .layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 20px;
+  grid-template-columns: 0px 1fr;    /* по умолчанию чат скрыт */
+  gap: 0;
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px 20px 40px;
   min-height: 100vh;
+  transition: grid-template-columns 0.3s ease, gap 0.3s ease;
+}
+
+/* Когда чат открыт — разворачиваем колонку */
+.layout.chat-visible {
+  grid-template-columns: var(--chat-width) 1fr;
+  gap: 20px;
+}
+
+/* Контент всегда центрируется в своей колонке */
+.content {
+  min-width: 0;
+  max-width: 940px;
+  margin: 0 auto;
+  width: 100%;
+  transition: max-width 0.3s ease;
 }
 
 @media (max-width: 900px) {
-  .layout {
+  .layout,
+  .layout.chat-visible {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
   .chat-panel {
-    order: -1;
-    max-height: 280px;
+    max-height: 260px;
+    position: static;
   }
-}
-
-.content {
-  min-width: 0; /* защита от переполнения */
 }
 
 /* ============================================================
-   ЧАТ ПОБЕДИТЕЛЯ
+   ЧАТ ПОБЕДИТЕЛЯ — сворачивается в 0, когда закрыт
    ============================================================ */
 .chat-panel {
   background: var(--card);
@@ -116,6 +131,21 @@ body::after {
   position: sticky;
   top: 24px;
   max-height: calc(100vh - 48px);
+  opacity: 0;
+  transform: translateX(-16px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+
+.layout.chat-visible .chat-panel {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Скрываем сам блок, когда он в нулевой колонке */
+.layout:not(.chat-visible) .chat-panel {
+  display: none;
 }
 
 .chat-header {
@@ -182,9 +212,7 @@ h1 { font-size: 1.5rem; margin: 0; font-weight: 700; letter-spacing: -0.02em; }
 }
 .twitch-link:hover { text-decoration: underline; }
 
-main {
-  display: grid; gap: 18px;
-}
+main { display: grid; gap: 18px; }
 
 .card {
   background: var(--card);
@@ -342,7 +370,12 @@ textarea.winner-active {
 
 /* OBS-режим */
 body.obs { background: transparent; padding: 0; }
-body.obs .layout { display: block; padding: 0; }
+body.obs .layout,
+body.obs .layout.chat-visible {
+  display: block;
+  padding: 0;
+  gap: 0;
+}
 body.obs header,
 body.obs .card:not(.center),
 body.obs #resetBtn,
@@ -361,3 +394,27 @@ body.obs .winners {
   font-size: 2.4rem;
   text-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
+
+/* Кнопка-«открыть чат» — маленькая, в углу */
+#openChatBtn {
+  position: fixed;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 51;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 109, 255, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s ease;
+}
+#openChatBtn.visible { display: flex; }
+#openChatBtn:hover { background: var(--accent-2); transform: translateY(-50%) scale(1.06); }
