@@ -1,5 +1,5 @@
 // ============================================================
-//  РАНДОМАЙЗЕР DENTIK__ — script.js (финальная версия)
+//  РАНДОМАЙЗЕР DENTIK__ — script.js
 // ============================================================
 /* global tmi */
 
@@ -58,23 +58,6 @@ openChatBtn.addEventListener('click', showChat);
 
 $('clearChat').addEventListener('click', () => {
   hideChat();
-  // ============================================================
-//  ДИСКЛЕЙМЕР — показать один раз
-// ============================================================
-const disclaimerEl = document.getElementById('disclaimer');
-const disclaimerCloseBtn = document.getElementById('disclaimerClose');
-
-if (disclaimerEl && disclaimerCloseBtn) {
-  const seen = localStorage.getItem(DISCLAIMER_KEY);
-  if (!seen) {
-    setTimeout(() => disclaimerEl.classList.add('show'), 800);
-  }
-
-  disclaimerCloseBtn.addEventListener('click', () => {
-    disclaimerEl.classList.remove('show');
-    localStorage.setItem(DISCLAIMER_KEY, '1');
-  });
-}
   chatWinner = null;
   chatTitleEl.textContent = '💬 Чат победителя';
   chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
@@ -656,6 +639,21 @@ loadState();
 updateCount();
 updateChatStatus(false);
 drawWheel(getParticipants(), currentAngle);
-
-// Изначально чат скрыт
 hideChat();
+
+// ============================================================
+//  ДИСКЛЕЙМЕР
+// ============================================================
+const disclaimerEl = document.getElementById('disclaimer');
+const disclaimerCloseBtn = document.getElementById('disclaimerClose');
+
+if (disclaimerEl && disclaimerCloseBtn) {
+  const seen = localStorage.getItem(DISCLAIMER_KEY);
+  if (!seen) {
+    setTimeout(() => disclaimerEl.classList.add('show'), 800);
+  }
+  disclaimerCloseBtn.addEventListener('click', () => {
+    disclaimerEl.classList.remove('show');
+    localStorage.setItem(DISCLAIMER_KEY, '1');
+  });
+}
