@@ -1,10 +1,11 @@
 // ============================================================
-//  РАНДОМАЙЗЕР DENTIK__ — script.js
+//  РАНДОМАЙЗЕР DENTIK__ — script.js (финальная версия)
 // ============================================================
 /* global tmi */
 
 const $ = id => document.getElementById(id);
 
+// --- Основные элементы ---
 const participantsEl = $('participants');
 const countEl        = $('count');
 const canvas         = $('wheel');
@@ -16,11 +17,13 @@ const historyEl      = $('history');
 const keywordEl      = $('keyword');
 
 // --- Чат победителя ---
+const chatPanel      = $('chatPanel');
 const chatMessagesEl = $('chatMessages');
 const chatTitleEl    = $('chatTitle');
-const layoutEl       = document.querySelector('.layout');
+const openChatBtn    = $('openChatBtn');
 let chatWinner       = null;
 
+// --- Состояние ---
 let history = [];
 let timerInterval = null;
 let twitchClient = null;
@@ -39,20 +42,14 @@ const recentWinners = [];
 const STORAGE_KEY = 'dentik_randomizer_v1';
 
 // ============================================================
-//  Кнопка открытия чата (создаём динамически)
+//  ЧАТ ПОБЕДИТЕЛЯ — открыть / закрыть
 // ============================================================
-const openChatBtn = document.createElement('button');
-openChatBtn.id = 'openChatBtn';
-openChatBtn.textContent = '💬';
-openChatBtn.title = 'Открыть чат победителя';
-document.body.appendChild(openChatBtn);
-
 function showChat() {
-  layoutEl.classList.add('chat-visible');
+  chatPanel.classList.add('open');
   openChatBtn.classList.remove('visible');
 }
 function hideChat() {
-  layoutEl.classList.remove('chat-visible');
+  chatPanel.classList.remove('open');
   openChatBtn.classList.add('visible');
 }
 
@@ -65,9 +62,6 @@ $('clearChat').addEventListener('click', () => {
   chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
 });
 
-// ============================================================
-//  Чат победителя — функции
-// ============================================================
 function setChatWinner(winner) {
   chatWinner = winner;
   chatTitleEl.textContent = '💬 ' + winner;
@@ -116,7 +110,7 @@ $('themeBtn').addEventListener('click', () => {
 });
 
 // ============================================================
-//  Участники
+//  УЧАСТНИКИ
 // ============================================================
 function isIgnored(name) {
   const raw = ($('ignoreList').value || '').trim().toLowerCase();
@@ -138,7 +132,7 @@ function updateCount() {
 }
 
 // ============================================================
-//  Колесо
+//  КОЛЕСО
 // ============================================================
 function sectorColors() {
   const css = getComputedStyle(document.body);
@@ -217,7 +211,7 @@ function drawWheel(participants, rotation = 0) {
 drawWheel([]);
 
 // ============================================================
-//  Звук
+//  ЗВУК
 // ============================================================
 function playSound(src) {
   if (!$('soundOn').checked) return;
@@ -227,7 +221,7 @@ function playSound(src) {
 }
 
 // ============================================================
-//  Конфетти
+//  КОНФЕТТИ
 // ============================================================
 const confettiCanvas = $('confetti');
 const confettiCtx = confettiCanvas.getContext('2d');
@@ -288,7 +282,7 @@ function highlightWinnerInList() {
 }
 
 // ============================================================
-//  Розыгрыш
+//  РОЗЫГРЫШ
 // ============================================================
 $('startBtn').addEventListener('click', () => {
   const list = getParticipants();
@@ -350,7 +344,7 @@ $('startBtn').addEventListener('click', () => {
 });
 
 // ============================================================
-//  Финал раунда
+//  ФИНАЛ РАУНДА
 // ============================================================
 function finishRound(winners) {
   winnersEl.textContent = '🏆 ' + winners.join(', ');
@@ -377,7 +371,7 @@ function finishRound(winners) {
 }
 
 // ============================================================
-//  Таймер
+//  ТАЙМЕР
 // ============================================================
 function startTimer(seconds) {
   clearInterval(timerInterval);
@@ -401,7 +395,7 @@ function startTimer(seconds) {
 }
 
 // ============================================================
-//  Режим «Кто быстрее»
+//  РЕЖИМ «КТО БЫСТРЕЕ»
 // ============================================================
 function startRace(winner) {
   raceActive = true;
@@ -426,7 +420,7 @@ function startRace(winner) {
 }
 
 // ============================================================
-//  Twitch
+//  TWITCH
 // ============================================================
 function updateChatStatus(online) {
   const btn = $('addFromChat');
@@ -533,7 +527,7 @@ function renderCollectedUsers() {
 }
 
 // ============================================================
-//  Кнопки
+//  КНОПКИ
 // ============================================================
 $('addFromChat').addEventListener('click', () => {
   if (!twitchConnected) connectTwitch();
@@ -565,7 +559,7 @@ $('obsModeBtn').addEventListener('click', () => {
 });
 
 // ============================================================
-//  localStorage
+//  LOCALSTORAGE
 // ============================================================
 function saveState() {
   const state = {
@@ -638,7 +632,7 @@ $('clearStorage').addEventListener('click', () => {
 });
 
 // ============================================================
-//  Инициализация
+//  ИНИЦИАЛИЗАЦИЯ
 // ============================================================
 loadState();
 updateCount();

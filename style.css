@@ -77,75 +77,36 @@ body::after {
 }
 
 /* ============================================================
-   LAYOUT — контент центрируется, чат не сдвигает его
+   ОСНОВНОЙ КОНТЕНТ — всегда центрирован
    ============================================================ */
-.layout {
-  display: grid;
-  grid-template-columns: 0px 1fr;    /* по умолчанию чат скрыт */
-  gap: 0;
-  max-width: 1400px;
+.content {
+  max-width: 940px;
   margin: 0 auto;
   padding: 24px 20px 40px;
   min-height: 100vh;
-  transition: grid-template-columns 0.3s ease, gap 0.3s ease;
-}
-
-/* Когда чат открыт — разворачиваем колонку */
-.layout.chat-visible {
-  grid-template-columns: var(--chat-width) 1fr;
-  gap: 20px;
-}
-
-/* Контент всегда центрируется в своей колонке */
-.content {
-  min-width: 0;
-  max-width: 940px;
-  margin: 0 auto;
-  width: 100%;
-  transition: max-width 0.3s ease;
-}
-
-@media (max-width: 900px) {
-  .layout,
-  .layout.chat-visible {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .chat-panel {
-    max-height: 260px;
-    position: static;
-  }
 }
 
 /* ============================================================
-   ЧАТ ПОБЕДИТЕЛЯ — сворачивается в 0, когда закрыт
+   ЧАТ ПОБЕДИТЕЛЯ — fixed слева, выезжает поверх фона,
+   НЕ сдвигает контент
    ============================================================ */
 .chat-panel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--chat-width);
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.4);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
-  opacity: 0;
-  transform: translateX(-16px);
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.3s ease;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
 }
-
-.layout.chat-visible .chat-panel {
-  opacity: 1;
+.chat-panel.open {
   transform: translateX(0);
-  pointer-events: auto;
-}
-
-/* Скрываем сам блок, когда он в нулевой колонке */
-.layout:not(.chat-visible) .chat-panel {
-  display: none;
 }
 
 .chat-header {
@@ -159,6 +120,10 @@ body::after {
   font-size: 0.95rem;
 }
 #chatTitle { color: var(--accent); }
+.chat-close-btn {
+  padding: 2px 8px !important;
+  font-size: 0.8rem !important;
+}
 
 .chat-messages {
   flex: 1;
@@ -169,7 +134,6 @@ body::after {
   gap: 8px;
   font-size: 0.9rem;
   line-height: 1.4;
-  min-height: 200px;
 }
 .chat-empty {
   color: var(--muted);
@@ -197,8 +161,32 @@ body::after {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Кнопка открытия чата */
+#openChatBtn {
+  position: fixed;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 101;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 109, 255, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s ease;
+}
+#openChatBtn.visible { display: flex; }
+#openChatBtn:hover { background: var(--accent-2); transform: translateY(-50%) scale(1.08); }
+
 /* ============================================================
-   ОСНОВНОЙ КОНТЕНТ
+   ОСНОВНОЙ КОНТЕНТ (карточки)
    ============================================================ */
 header {
   display: flex; justify-content: space-between; align-items: center;
@@ -370,12 +358,6 @@ textarea.winner-active {
 
 /* OBS-режим */
 body.obs { background: transparent; padding: 0; }
-body.obs .layout,
-body.obs .layout.chat-visible {
-  display: block;
-  padding: 0;
-  gap: 0;
-}
 body.obs header,
 body.obs .card:not(.center),
 body.obs #resetBtn,
@@ -384,7 +366,8 @@ body.obs label,
 body.obs .race-status,
 body.obs .timer,
 body.obs .timer-bar-wrap,
-body.obs .chat-panel { display: none !important; }
+body.obs .chat-panel,
+body.obs #openChatBtn { display: none !important; }
 body.obs .card.center {
   background: transparent; border: none;
   box-shadow: none; padding: 0;
@@ -394,27 +377,4 @@ body.obs .winners {
   font-size: 2.4rem;
   text-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
-
-/* Кнопка-«открыть чат» — маленькая, в углу */
-#openChatBtn {
-  position: fixed;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 51;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(139, 109, 255, 0.45);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  transition: 0.15s ease;
-}
-#openChatBtn.visible { display: flex; }
-#openChatBtn:hover { background: var(--accent-2); transform: translateY(-50%) scale(1.06); }
+body.obs .content { padding: 0; max-width: none; }
