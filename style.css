@@ -435,3 +435,77 @@ body.obs .content { padding: 0; max-width: none; }
 .switch-label {
   line-height: 1.3;
 }
+/* ============================================================
+   ДИСКЛЕЙМЕР
+   ============================================================ */
+.disclaimer {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 9998;
+  max-width: 620px;
+  width: calc(100% - 40px);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(139, 109, 255, 0.18), rgba(180, 106, 255, 0.10));
+  border: 1.5px solid rgba(139, 109, 255, 0.45);
+  box-shadow:
+    0 10px 40px rgba(139, 109, 255, 0.35),
+    0 0 0 1px rgba(255,255,255,0.05) inset;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.disclaimer.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.disclaimer-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+  animation: disclaimerWobble 2.5s ease-in-out infinite;
+}
+@keyframes disclaimerWobble {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(6deg); }
+}
+.disclaimer-text strong {
+  color: #b46aff;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+.disclaimer-close {
+  background: transparent !important;
+  border: none !important;
+  color: var(--muted) !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 8px !important;
+  transition: 0.15s ease !important;
+  box-shadow: none !important;
+}
+.disclaimer-close:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,0.08) !important;
+}
+.disclaimer-close::before { display: none !important; }
+
+@media (max-width: 500px) {
+  .disclaimer { font-size: 0.82rem; padding: 14px 16px; }
+  .disclaimer-icon { font-size: 1.4rem; }
+}
