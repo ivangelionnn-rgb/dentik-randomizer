@@ -6,8 +6,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
   <canvas id="confetti"></canvas>
+
+  <!-- ЧАТ ПОБЕДИТЕЛЯ (слева) -->
+  <aside class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <span id="chatTitle">💬 Чат победителя</span>
+      <button id="clearChat" type="button" class="ghost-btn" style="padding:2px 8px; font-size:0.75rem;">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty">Здесь появятся сообщения победителя</div>
+    </div>
+  </aside>
 
   <header>
     <h1>🎲 Рандомайзер розыгрышей</h1>
@@ -30,62 +40,29 @@
         <button id="testBtn" type="button">🧪 Тест</button>
         <input id="keyword" placeholder="!розыгрыш" />
       </div>
-      <p class="muted">Всего участников: <span id="count">0</span></p>
-      <label class="field">Игнор-лист (ники через запятую):
+      <p>Всего участников: <span id="count">0</span></p>
+      <label>Игнор-лист (ники через запятую):
         <input id="ignoreList" placeholder="dentik__, nightbot, streamlabs">
       </label>
-
-      <label class="switch">
+      <label>
         <input type="checkbox" id="cmdMode" checked>
-        <span class="slider"></span>
-        <span class="switch-label">Команды <code>!join</code> / <code>!leave</code> в чате</span>
+        Команды <code>!join</code> / <code>!leave</code> в чате
       </label>
-
-      <div class="row" style="margin-top:12px;">
-        <button id="clearStorage" type="button" class="ghost-btn">🗑️ Сбросить сохранённое</button>
+      <div class="row" style="margin-top:10px;">
+        <button id="clearStorage" type="button">🗑️ Сбросить сохранённое</button>
       </div>
     </section>
 
     <!-- Настройки -->
     <section class="card">
       <h2>Настройки</h2>
-
-      <div class="grid-2">
-        <label class="field">Победителей:
-          <input type="number" id="winnersCount" value="1" min="1">
-        </label>
-        <label class="field">Время на ответ (сек):
-          <input type="number" id="timerSec" value="60" min="5">
-        </label>
-      </div>
-
-      <label class="field">Не выигрывать N раундов подряд:
-        <input type="number" id="antiRepeat" value="1" min="0">
-      </label>
-
-      <label class="switch">
-        <input type="checkbox" id="soundOn" checked>
-        <span class="slider"></span>
-        <span class="switch-label">🔊 Звук</span>
-      </label>
-
-      <label class="switch">
-        <input type="checkbox" id="spinAnim" checked>
-        <span class="slider"></span>
-        <span class="switch-label">🎡 Анимация рулетки</span>
-      </label>
-
-      <label class="switch">
-        <input type="checkbox" id="raceMode">
-        <span class="slider"></span>
-        <span class="switch-label">⚡ Режим «Кто быстрее ответит»</span>
-      </label>
-
-      <label class="switch">
-        <input type="checkbox" id="confettiOn" checked>
-        <span class="slider"></span>
-        <span class="switch-label">🎆 Конфетти при выигрыше</span>
-      </label>
+      <label>Победителей: <input type="number" id="winnersCount" value="1" min="1"></label>
+      <label>Время на ответ (сек): <input type="number" id="timerSec" value="60" min="5"></label>
+      <label>Не выигрывать N раундов подряд: <input type="number" id="antiRepeat" value="1" min="0"></label>
+      <label><input type="checkbox" id="soundOn" checked> Звук</label>
+      <label><input type="checkbox" id="spinAnim" checked> Анимация рулетки</label>
+      <label><input type="checkbox" id="raceMode"> Режим «Кто быстрее ответит»</label>
+      <label><input type="checkbox" id="confettiOn" checked> 🎆 Конфетти при выигрыше</label>
     </section>
 
     <!-- Розыгрыш -->
@@ -93,14 +70,12 @@
       <button id="startBtn" class="primary" type="button">🎰 Розыгрыш!</button>
       <canvas id="wheel" width="360" height="360" class="wheel-canvas"></canvas>
       <div id="winners" class="winners"></div>
-
       <div id="timerBarWrap" class="timer-bar-wrap">
         <div id="timerBar" class="timer-bar"></div>
       </div>
       <div id="timer" class="timer"></div>
       <div id="raceStatus" class="race-status"></div>
-
-      <button id="resetBtn" type="button" class="ghost-btn">Сброс</button>
+      <button id="resetBtn" type="button">Сброс</button>
     </section>
 
     <!-- История -->
@@ -112,7 +87,5 @@
 
   <script src="tmi.min.js"></script>
   <script src="script.js"></script>
-  <div class="top-bar"></div>
 </body>
-<div class="bottom-bar"></div>
 </html>

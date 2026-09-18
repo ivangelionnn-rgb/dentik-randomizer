@@ -1,5 +1,5 @@
 // ============================================================
-//  РАНДОМАЙЗЕР DENTIK__ — Волна 1 (визуал)
+//  РАНДОМАЙЗЕР DENTIK__ — script.js (+ чат победителя)
 // ============================================================
 /* global tmi */
 
@@ -14,6 +14,12 @@ const timerEl        = $('timer');
 const timerBar       = $('timerBar');
 const historyEl      = $('history');
 const keywordEl      = $('keyword');
+
+// --- Чат победителя ---
+const chatPanel      = $('chatPanel');
+const chatMessagesEl = $('chatMessages');
+const chatTitleEl    = $('chatTitle');
+let chatWinner       = null;
 
 let history = [];
 let timerInterval = null;
@@ -33,7 +39,64 @@ const recentWinners = [];
 const STORAGE_KEY = 'dentik_randomizer_v1';
 
 // ============================================================
-//  ФИШКА 4 — темы
+//  Кнопка открытия чата (создаётся динамически)
+// ============================================================
+const openChatBtn = document.createElement('button');
+openChatBtn.id = 'openChatBtn';
+openChatBtn.textContent = '💬';
+openChatBtn.title = 'Открыть чат победителя';
+document.body.appendChild(openChatBtn);
+
+openChatBtn.addEventListener('click', () => {
+  chatPanel.classList.add('open');
+  document.body.classList.add('chat-open');
+  openChatBtn.classList.remove('visible');
+});
+
+$('clearChat').addEventListener('click', () => {
+  chatPanel.classList.remove('open');
+  document.body.classList.remove('chat-open');
+  openChatBtn.classList.add('visible');
+  chatWinner = null;
+  chatTitleEl.textContent = '💬 Чат победителя';
+  chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
+});
+
+// ============================================================
+//  Чат победителя — функции
+// ============================================================
+function setChatWinner(winner) {
+  chatWinner = winner;
+  chatTitleEl.textContent = '💬 ' + winner;
+  chatMessagesEl.innerHTML = '<div class="chat-empty">Ждём сообщений от ' + winner + '…</div>';
+  chatPanel.classList.add('open');
+  document.body.classList.add('chat-open');
+  openChatBtn.classList.remove('visible');
+}
+
+function appendChatMessage(sender, message) {
+  if (!chatWinner) return;
+  if ((sender || '').toLowerCase() !== chatWinner.toLowerCase()) return;
+
+  const empty = chatMessagesEl.querySelector('.chat-empty');
+  if (empty) empty.remove();
+
+  const time = new Date().toLocaleTimeString().slice(0, 5);
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  // текст сообщения экранируем от HTML
+  div.textContent = message;
+  const timeSpan = document.createElement('span');
+  timeSpan.className = 'time';
+  timeSpan.textContent = time;
+  div.appendChild(timeSpan);
+  chatMessagesEl.appendChild(div);
+
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+
+// ============================================================
+//  ТЕМЫ
 // ============================================================
 const THEMES = ['', 'theme-neon', 'theme-cyberpunk', 'theme-valentine'];
 const THEME_NAMES = ['Classic', 'Neon', 'Cyberpunk', 'Valentine'];
@@ -43,15 +106,13 @@ function applyTheme(idx) {
   document.body.classList.remove('theme-neon', 'theme-cyberpunk', 'theme-valentine');
   if (THEMES[idx]) document.body.classList.add(THEMES[idx]);
   currentThemeIdx = idx;
-  $('themeBtn').textContent = '🌈 ' + THEME_NAMES[idx];
+  $('themeBtn').textContent = '🎨 ' + THEME_NAMES[idx];
   localStorage.setItem('dentik_theme', String(idx));
-  // Перерисовать колесо в новых цветах
   drawWheel(getParticipants(), currentAngle);
 }
 
 $('themeBtn').addEventListener('click', () => {
-  const next = (currentThemeIdx + 1) % THEMES.length;
-  applyTheme(next);
+  applyTheme((currentThemeIdx + 1) % THEMES.length);
 });
 
 // ============================================================
@@ -81,17 +142,15 @@ function updateCount() {
 // ============================================================
 function sectorColors() {
   const css = getComputedStyle(document.body);
-  const accent = css.getPropertyValue('--accent').trim() || '#9147ff';
-  const accent2 = css.getPropertyValue('--accent-2').trim() || '#5c2dbb';
-  const win = css.getPropertyValue('--win').trim() || '#7CFC9A';
+  const accent = css.getPropertyValue('--accent').trim() || '#8b6dff';
+  const accent2 = css.getPropertyValue('--accent-2').trim() || '#6a4fe0';
+  const win = css.getPropertyValue('--win').trim() || '#4fd18b';
   return [accent, accent2, accent, '#a866ff', accent2, win, accent, '#3d246e'];
 }
 
 function drawWheel(participants, rotation = 0) {
-  const w = canvas.width;
-  const h = canvas.height;
-  const cx = w / 2;
-  const cy = h / 2;
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
   const r = Math.min(w, h) / 2 - 8;
 
   ctx.clearRect(0, 0, w, h);
@@ -143,7 +202,6 @@ function drawWheel(participants, rotation = 0) {
     ctx.restore();
   }
 
-  // стрелка
   ctx.beginPath();
   ctx.moveTo(cx, cy - r - 2);
   ctx.lineTo(cx - 14, cy - r - 26);
@@ -169,7 +227,7 @@ function playSound(src) {
 }
 
 // ============================================================
-//  ФИШКА 1 — конфетти
+//  Конфетти
 // ============================================================
 const confettiCanvas = $('confetti');
 const confettiCtx = confettiCanvas.getContext('2d');
@@ -185,10 +243,8 @@ window.addEventListener('resize', resizeConfetti);
 
 function launchConfetti() {
   if (!$('confettiOn').checked) return;
-
-  const colors = ['#9147ff', '#ffb454', '#7CFC9A', '#ff5c8a', '#00ffe1', '#ffe600'];
+  const colors = ['#8b6dff', '#ffb454', '#4fd18b', '#ff5c8a', '#00ffe1', '#ffe600'];
   confettiParticles = [];
-
   for (let i = 0; i < 180; i++) {
     confettiParticles.push({
       x: Math.random() * confettiCanvas.width,
@@ -198,11 +254,9 @@ function launchConfetti() {
       size: 4 + Math.random() * 8,
       color: colors[Math.floor(Math.random() * colors.length)],
       rot: Math.random() * Math.PI * 2,
-      vrot: (Math.random() - 0.5) * 0.3,
-      life: 0
+      vrot: (Math.random() - 0.5) * 0.3
     });
   }
-
   if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
   animateConfetti();
 }
@@ -211,15 +265,9 @@ function animateConfetti() {
   const w = confettiCanvas.width;
   const h = confettiCanvas.height;
   confettiCtx.clearRect(0, 0, w, h);
-
   let alive = 0;
   for (const p of confettiParticles) {
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.08;
-    p.rot += p.vrot;
-    p.life++;
-
+    p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.rot += p.vrot;
     if (p.y < h + 30) {
       alive++;
       confettiCtx.save();
@@ -230,20 +278,11 @@ function animateConfetti() {
       confettiCtx.restore();
     }
   }
-
-  if (alive > 0) {
-    confettiAnimId = requestAnimationFrame(animateConfetti);
-  } else {
-    confettiCtx.clearRect(0, 0, w, h);
-    confettiAnimId = null;
-  }
+  if (alive > 0) confettiAnimId = requestAnimationFrame(animateConfetti);
+  else { confettiCtx.clearRect(0, 0, w, h); confettiAnimId = null; }
 }
 
-// ============================================================
-//  ФИШКА 2 — подсветка победителя в textarea
-// ============================================================
-function highlightWinnerInList(winner) {
-  // Просто мигаем рамкой textarea — визуально «подсвечиваем»
+function highlightWinnerInList() {
   participantsEl.classList.add('winner-active');
   setTimeout(() => participantsEl.classList.remove('winner-active'), 3000);
 }
@@ -316,15 +355,15 @@ $('startBtn').addEventListener('click', () => {
 function finishRound(winners) {
   winnersEl.textContent = '🏆 ' + winners.join(', ');
   playSound('assets/ding.mp3');
+  setTimeout(() => playSound('assets/ding.mp3'), 250);
 
-  // ФИШКА 5 — фанфар
-  setTimeout(() => playSound('assets/fanfare.mp3'), 250);
-
-  // ФИШКА 1 — конфетти
   launchConfetti();
+  highlightWinnerInList();
 
-  // ФИШКА 2 — подсветка
-  highlightWinnerInList(winners[0]);
+  // Открываем чат для первого победителя
+  if (winners.length > 0) {
+    setChatWinner(winners[0]);
+  }
 
   const stamp = new Date().toLocaleTimeString();
   history.unshift('[' + stamp + '] ' + winners.join(', '));
@@ -341,7 +380,7 @@ function finishRound(winners) {
 }
 
 // ============================================================
-//  ФИШКА 3 — таймер с прогресс-баром
+//  Таймер
 // ============================================================
 function startTimer(seconds) {
   clearInterval(timerInterval);
@@ -381,7 +420,7 @@ function startRace(winner) {
       clearInterval(tick);
       if (raceActive) {
         raceActive = false;
-        $('raceStatus').textContent = '❌ ' + winner + ' не ответил. Приз переходит дальше!';
+        $('raceStatus').textContent = '❌ ' + winner + ' не ответил.';
       }
       return;
     }
@@ -429,9 +468,14 @@ function connectTwitch() {
 
   twitchClient.on('message', (channel, tags, message, self) => {
     if (self) return;
+
     const sender = tags['display-name'] || tags.username;
     const lower = message.trim().toLowerCase();
 
+    // Отправляем в панель чата победителя
+    appendChatMessage(sender, message);
+
+    // --- !join / !leave ---
     if ($('cmdMode').checked) {
       if (lower === '!join') {
         if (sender && !collectedUsers.has(sender) && !isIgnored(sender)) {
@@ -451,6 +495,7 @@ function connectTwitch() {
       }
     }
 
+    // --- Режим «Кто быстрее» ---
     if (raceActive && raceWinner) {
       if ((sender || '').toLowerCase() === raceWinner.toLowerCase()) {
         raceActive = false;
@@ -460,6 +505,7 @@ function connectTwitch() {
       }
     }
 
+    // --- Ключевое слово ---
     const keyword = (keywordEl.value.trim() || '!розыгрыш').toLowerCase();
     if (lower.includes(keyword)) {
       if (sender && !collectedUsers.has(sender) && !isIgnored(sender)) {
@@ -517,13 +563,12 @@ $('testBtn').addEventListener('click', () => {
              + '_' + Math.floor(Math.random() * 999);
   collectedUsers.add(name);
   renderCollectedUsers();
-  console.log('🧪 Добавлен фейк-участник:', name);
 });
 
 $('obsModeBtn').addEventListener('click', () => {
   document.body.classList.toggle('obs');
   $('obsModeBtn').textContent = document.body.classList.contains('obs')
-    ? '🎬 Выйти из OBS' : '🎬 OBS-режим';
+    ? '🎬 Выйти из OBS' : '🎬 OBS-режим (временно не работает)';
 });
 
 // ============================================================
@@ -606,3 +651,6 @@ loadState();
 updateCount();
 updateChatStatus(false);
 drawWheel(getParticipants(), currentAngle);
+
+// Показываем кнопку открытия чата, если панель закрыта
+openChatBtn.classList.add('visible');
