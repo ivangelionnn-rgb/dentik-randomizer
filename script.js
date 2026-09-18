@@ -40,6 +40,7 @@ let raceTimeout = null;
 const recentWinners = [];
 
 const STORAGE_KEY = 'dentik_randomizer_v1';
+const DISCLAIMER_KEY = 'dentik_disclaimer_seen';
 
 // ============================================================
 //  ЧАТ ПОБЕДИТЕЛЯ — открыть / закрыть
@@ -57,6 +58,23 @@ openChatBtn.addEventListener('click', showChat);
 
 $('clearChat').addEventListener('click', () => {
   hideChat();
+  // ============================================================
+//  ДИСКЛЕЙМЕР — показать один раз
+// ============================================================
+const disclaimerEl = document.getElementById('disclaimer');
+const disclaimerCloseBtn = document.getElementById('disclaimerClose');
+
+if (disclaimerEl && disclaimerCloseBtn) {
+  const seen = localStorage.getItem(DISCLAIMER_KEY);
+  if (!seen) {
+    setTimeout(() => disclaimerEl.classList.add('show'), 800);
+  }
+
+  disclaimerCloseBtn.addEventListener('click', () => {
+    disclaimerEl.classList.remove('show');
+    localStorage.setItem(DISCLAIMER_KEY, '1');
+  });
+}
   chatWinner = null;
   chatTitleEl.textContent = '💬 Чат победителя';
   chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
