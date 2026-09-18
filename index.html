@@ -8,82 +8,87 @@
 <body>
   <canvas id="confetti"></canvas>
 
-  <!-- ЧАТ ПОБЕДИТЕЛЯ (слева) -->
-  <aside class="chat-panel" id="chatPanel">
-    <div class="chat-header">
-      <span id="chatTitle">💬 Чат победителя</span>
-      <button id="clearChat" type="button" class="ghost-btn" style="padding:2px 8px; font-size:0.75rem;">✕</button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-empty">Здесь появятся сообщения победителя</div>
-    </div>
-  </aside>
-
-  <header>
-    <h1>🎲 Рандомайзер розыгрышей</h1>
-    <div class="header-actions">
-      <button id="themeBtn" type="button" class="ghost-btn">🎨 Classic</button>
-      <button id="obsModeBtn" type="button" class="ghost-btn">🎬 OBS-режим (временно не работает)</button>
-      <a href="https://www.twitch.tv/dentik__" target="_blank" class="twitch-link">
-        twitch.tv/dentik__
-      </a>
-    </div>
-  </header>
-
-  <main>
-    <!-- Участники -->
-    <section class="card">
-      <h2>Участники</h2>
-      <textarea id="participants" placeholder="Введите участников (по одному в строке)"></textarea>
-      <div class="row">
-        <button id="addFromChat" type="button">🔴 Подключиться к чату DENTIK__</button>
-        <button id="testBtn" type="button">🧪 Тест</button>
-        <input id="keyword" placeholder="!розыгрыш" />
+  <div class="layout">
+    <!-- ЧАТ ПОБЕДИТЕЛЯ — постоянная колонка слева -->
+    <aside class="chat-panel" id="chatPanel">
+      <div class="chat-header">
+        <span id="chatTitle">💬 Чат победителя</span>
+        <button id="clearChat" type="button" class="ghost-btn" style="padding:2px 8px; font-size:0.75rem;">✕</button>
       </div>
-      <p>Всего участников: <span id="count">0</span></p>
-      <label>Игнор-лист (ники через запятую):
-        <input id="ignoreList" placeholder="dentik__, nightbot, streamlabs">
-      </label>
-      <label>
-        <input type="checkbox" id="cmdMode" checked>
-        Команды <code>!join</code> / <code>!leave</code> в чате
-      </label>
-      <div class="row" style="margin-top:10px;">
-        <button id="clearStorage" type="button">🗑️ Сбросить сохранённое</button>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-empty">Здесь появятся сообщения победителя</div>
       </div>
-    </section>
+    </aside>
 
-    <!-- Настройки -->
-    <section class="card">
-      <h2>Настройки</h2>
-      <label>Победителей: <input type="number" id="winnersCount" value="1" min="1"></label>
-      <label>Время на ответ (сек): <input type="number" id="timerSec" value="60" min="5"></label>
-      <label>Не выигрывать N раундов подряд: <input type="number" id="antiRepeat" value="1" min="0"></label>
-      <label><input type="checkbox" id="soundOn" checked> Звук</label>
-      <label><input type="checkbox" id="spinAnim" checked> Анимация рулетки</label>
-      <label><input type="checkbox" id="raceMode"> Режим «Кто быстрее ответит»</label>
-      <label><input type="checkbox" id="confettiOn" checked> 🎆 Конфетти при выигрыше</label>
-    </section>
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="content">
+      <header>
+        <h1>🎲 Рандомайзер розыгрышей</h1>
+        <div class="header-actions">
+          <button id="themeBtn" type="button" class="ghost-btn">🎨 Classic</button>
+          <button id="obsModeBtn" type="button" class="ghost-btn">🎬 OBS-режим (временно не работает)</button>
+          <a href="https://www.twitch.tv/dentik__" target="_blank" class="twitch-link">
+            twitch.tv/dentik__
+          </a>
+        </div>
+      </header>
 
-    <!-- Розыгрыш -->
-    <section class="card center">
-      <button id="startBtn" class="primary" type="button">🎰 Розыгрыш!</button>
-      <canvas id="wheel" width="360" height="360" class="wheel-canvas"></canvas>
-      <div id="winners" class="winners"></div>
-      <div id="timerBarWrap" class="timer-bar-wrap">
-        <div id="timerBar" class="timer-bar"></div>
-      </div>
-      <div id="timer" class="timer"></div>
-      <div id="raceStatus" class="race-status"></div>
-      <button id="resetBtn" type="button">Сброс</button>
-    </section>
+      <main>
+        <!-- Участники -->
+        <section class="card">
+          <h2>Участники</h2>
+          <textarea id="participants" placeholder="Введите участников (по одному в строке)"></textarea>
+          <div class="row">
+            <button id="addFromChat" type="button">🔴 Подключиться к чату DENTIK__</button>
+            <button id="testBtn" type="button">🧪 Тест</button>
+            <input id="keyword" placeholder="!розыгрыш" />
+          </div>
+          <p>Всего участников: <span id="count">0</span></p>
+          <label>Игнор-лист (ники через запятую):
+            <input id="ignoreList" placeholder="dentik__, nightbot, streamlabs">
+          </label>
+          <label>
+            <input type="checkbox" id="cmdMode" checked>
+            Команды <code>!join</code> / <code>!leave</code> в чате
+          </label>
+          <div class="row" style="margin-top:10px;">
+            <button id="clearStorage" type="button">🗑️ Сбросить сохранённое</button>
+          </div>
+        </section>
 
-    <!-- История -->
-    <section class="card">
-      <h2>История</h2>
-      <ul id="history"></ul>
-    </section>
-  </main>
+        <!-- Настройки -->
+        <section class="card">
+          <h2>Настройки</h2>
+          <label>Победителей: <input type="number" id="winnersCount" value="1" min="1"></label>
+          <label>Время на ответ (сек): <input type="number" id="timerSec" value="60" min="5"></label>
+          <label>Не выигрывать N раундов подряд: <input type="number" id="antiRepeat" value="1" min="0"></label>
+          <label><input type="checkbox" id="soundOn" checked> Звук</label>
+          <label><input type="checkbox" id="spinAnim" checked> Анимация рулетки</label>
+          <label><input type="checkbox" id="raceMode"> Режим «Кто быстрее ответит»</label>
+          <label><input type="checkbox" id="confettiOn" checked> 🎆 Конфетти при выигрыше</label>
+        </section>
+
+        <!-- Розыгрыш -->
+        <section class="card center">
+          <button id="startBtn" class="primary" type="button">🎰 Розыгрыш!</button>
+          <canvas id="wheel" width="360" height="360" class="wheel-canvas"></canvas>
+          <div id="winners" class="winners"></div>
+          <div id="timerBarWrap" class="timer-bar-wrap">
+            <div id="timerBar" class="timer-bar"></div>
+          </div>
+          <div id="timer" class="timer"></div>
+          <div id="raceStatus" class="race-status"></div>
+          <button id="resetBtn" type="button">Сброс</button>
+        </section>
+
+        <!-- История -->
+        <section class="card">
+          <h2>История</h2>
+          <ul id="history"></ul>
+        </section>
+      </main>
+    </div>
+  </div>
 
   <script src="tmi.min.js"></script>
   <script src="script.js"></script>

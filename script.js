@@ -1,5 +1,5 @@
 // ============================================================
-//  РАНДОМАЙЗЕР DENTIK__ — script.js (+ чат победителя)
+//  РАНДОМАЙЗЕР DENTIK__ — script.js (двухколоночный layout)
 // ============================================================
 /* global tmi */
 
@@ -16,7 +16,6 @@ const historyEl      = $('history');
 const keywordEl      = $('keyword');
 
 // --- Чат победителя ---
-const chatPanel      = $('chatPanel');
 const chatMessagesEl = $('chatMessages');
 const chatTitleEl    = $('chatTitle');
 let chatWinner       = null;
@@ -39,39 +38,20 @@ const recentWinners = [];
 const STORAGE_KEY = 'dentik_randomizer_v1';
 
 // ============================================================
-//  Кнопка открытия чата (создаётся динамически)
+//  Чат победителя
 // ============================================================
-const openChatBtn = document.createElement('button');
-openChatBtn.id = 'openChatBtn';
-openChatBtn.textContent = '💬';
-openChatBtn.title = 'Открыть чат победителя';
-document.body.appendChild(openChatBtn);
-
-openChatBtn.addEventListener('click', () => {
-  chatPanel.classList.add('open');
-  document.body.classList.add('chat-open');
-  openChatBtn.classList.remove('visible');
-});
-
 $('clearChat').addEventListener('click', () => {
-  chatPanel.classList.remove('open');
-  document.body.classList.remove('chat-open');
-  openChatBtn.classList.add('visible');
   chatWinner = null;
   chatTitleEl.textContent = '💬 Чат победителя';
   chatMessagesEl.innerHTML = '<div class="chat-empty">Здесь появятся сообщения победителя</div>';
 });
 
-// ============================================================
-//  Чат победителя — функции
-// ============================================================
 function setChatWinner(winner) {
   chatWinner = winner;
   chatTitleEl.textContent = '💬 ' + winner;
   chatMessagesEl.innerHTML = '<div class="chat-empty">Ждём сообщений от ' + winner + '…</div>';
-  chatPanel.classList.add('open');
-  document.body.classList.add('chat-open');
-  openChatBtn.classList.remove('visible');
+  // Прокручиваем страницу к чату, чтобы было видно
+  chatMessagesEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function appendChatMessage(sender, message) {
@@ -84,7 +64,6 @@ function appendChatMessage(sender, message) {
   const time = new Date().toLocaleTimeString().slice(0, 5);
   const div = document.createElement('div');
   div.className = 'chat-msg';
-  // текст сообщения экранируем от HTML
   div.textContent = message;
   const timeSpan = document.createElement('span');
   timeSpan.className = 'time';
@@ -360,10 +339,7 @@ function finishRound(winners) {
   launchConfetti();
   highlightWinnerInList();
 
-  // Открываем чат для первого победителя
-  if (winners.length > 0) {
-    setChatWinner(winners[0]);
-  }
+  if (winners.length > 0) setChatWinner(winners[0]);
 
   const stamp = new Date().toLocaleTimeString();
   history.unshift('[' + stamp + '] ' + winners.join(', '));
@@ -472,10 +448,8 @@ function connectTwitch() {
     const sender = tags['display-name'] || tags.username;
     const lower = message.trim().toLowerCase();
 
-    // Отправляем в панель чата победителя
     appendChatMessage(sender, message);
 
-    // --- !join / !leave ---
     if ($('cmdMode').checked) {
       if (lower === '!join') {
         if (sender && !collectedUsers.has(sender) && !isIgnored(sender)) {
@@ -495,7 +469,6 @@ function connectTwitch() {
       }
     }
 
-    // --- Режим «Кто быстрее» ---
     if (raceActive && raceWinner) {
       if ((sender || '').toLowerCase() === raceWinner.toLowerCase()) {
         raceActive = false;
@@ -505,7 +478,6 @@ function connectTwitch() {
       }
     }
 
-    // --- Ключевое слово ---
     const keyword = (keywordEl.value.trim() || '!розыгрыш').toLowerCase();
     if (lower.includes(keyword)) {
       if (sender && !collectedUsers.has(sender) && !isIgnored(sender)) {
@@ -651,6 +623,3 @@ loadState();
 updateCount();
 updateChatStatus(false);
 drawWheel(getParticipants(), currentAngle);
-
-// Показываем кнопку открытия чата, если панель закрыта
-openChatBtn.classList.add('visible');
