@@ -648,12 +648,11 @@ const disclaimerEl = document.getElementById('disclaimer');
 const disclaimerCloseBtn = document.getElementById('disclaimerClose');
 
 if (disclaimerEl && disclaimerCloseBtn) {
-  const seen = localStorage.getItem(DISCLAIMER_KEY);
-  if (!seen) {
-    setTimeout(() => disclaimerEl.classList.add('show'), 800);
-  }
+  // Показываем всегда при заходе
+  setTimeout(() => disclaimerEl.classList.add('show'), 800);
+
   disclaimerCloseBtn.addEventListener('click', () => {
     disclaimerEl.classList.remove('show');
-    localStorage.setItem(DISCLAIMER_KEY, '1');
+    // Ничего не сохраняем — значит будет показываться каждый раз
   });
 }
